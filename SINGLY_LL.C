@@ -1,10 +1,12 @@
 #include<stdio.h>
 #include<conio.h>
-typedef struct
+#include<stdlib.h>
+typedef struct Node
 {
 	int data;
 	struct Node *next;
 }Node;
+
 Node* insertB(Node *start, int ele)
 {
 	Node *p;
@@ -13,6 +15,7 @@ Node* insertB(Node *start, int ele)
 	p->next=start;
 	return p;
 }
+
 Node* insertE(Node *start, int ele)
 {
 	Node *p,*q;
@@ -28,6 +31,7 @@ Node* insertE(Node *start, int ele)
 	q->next=p;
 	return start;
 }
+
 Node* insertAt(Node *start, int ele, int loc)
 {
 	Node *p,*q;
@@ -42,8 +46,8 @@ Node* insertAt(Node *start, int ele, int loc)
 	q=start;
 	while(i<loc-1)
 	{
-		q=q->next;
 		if(q==NULL) break;
+		q=q->next;
 		i++;
 	}
 	if(q==NULL)
@@ -55,12 +59,14 @@ Node* insertAt(Node *start, int ele, int loc)
 	q->next=p;
 	return start;
 }
+
 Node* insertBefore(Node *start,int ele, int el1)
 {
 	Node *p,*q,*r;
 	p=(Node*)malloc(sizeof(Node));
 	p->data=ele;
 	q=start;
+	if(q==NULL) return start;
 	if(q->data==el1)
 	{
 		p->next=start;
@@ -68,7 +74,7 @@ Node* insertBefore(Node *start,int ele, int el1)
 	}
 	r=q;
 	q=q->next;
-	while(q->data!=el1 && q!=NULL)
+	while(q!=NULL && q->data!=el1)
 	{
 		q=q->next;
 		r=r->next;
@@ -82,13 +88,42 @@ Node* insertBefore(Node *start,int ele, int el1)
 	r->next=p;
 	return start;
 }
+
+Node* insertSorted(Node *start,int ele)
+{
+	Node *p,*q,*r;
+	p=(Node*)malloc(sizeof(Node));
+	p->data=ele;
+	if(start==NULL)
+	{
+		p->next=NULL;
+		return p;
+	}
+	q=start;
+	if(q->data>ele)
+	{
+		p->next=start;
+		return p;
+	}
+	r=q;
+	q=q->next;
+	while(q!=NULL && q->data<ele)
+	{
+		q=q->next;
+		r=r->next;
+	}
+	p->next=q;
+	r->next=p;
+	return start;
+}
+
 Node* insertAfter(Node *start,int ele,int el1)
 {
 	Node *p,*q;
 	p=(Node*)malloc(sizeof(Node));
 	p->data=ele;
 	q=start;
-	while(q->data!=el1 && q!=NULL)
+	while(q!=NULL && q->data!=el1)
 	{
 		q=q->next;
 	}
@@ -101,7 +136,8 @@ Node* insertAfter(Node *start,int ele,int el1)
 	q->next=p;
 	return start;
 }
-/*void display(Node *start)
+
+void display(Node *start)
 {
 	if(start==NULL) printf("List is empty\n");
 	else
@@ -113,15 +149,8 @@ Node* insertAfter(Node *start,int ele,int el1)
 			start=start->next;
 		}
 	}
-}*/
-void display(Node *start)
-{
-	if(start!=NULL)
-	{
-		printf("%d\n",start->data);
-		display(start->next);
-	}
 }
+
 void displayR(Node *start)
 {
 	if(start!=NULL)
@@ -130,6 +159,193 @@ void displayR(Node *start)
 		printf("%d\n",start->data);
 	}
 }
+
+Node* deleteB(Node *start)
+{
+	Node *p;
+	if(start==NULL)
+	{
+		printf("List is empty\n");
+		return NULL;
+	}
+	p=start;
+	start=p->next;
+	printf("%d deleted\n",p->data);
+	free(p);
+	return start;
+}
+
+Node* deleteEnd(Node *start)
+{
+	Node *q,*r;
+	if(start==NULL)
+	{
+		printf("List is empty\n");
+		return start;
+	}
+	if(start->next==NULL)
+	{
+		free(start);
+		return NULL;
+	}
+	r=start;
+	q=r->next;
+	while(q->next!=NULL)
+	{
+		q=q->next;
+		r=r->next;
+	}
+	free(q);
+	r->next=NULL;
+	return start;
+}
+
+Node* deleteAt(Node *start, int loc)
+{
+	Node *q,*r;
+	int i=1;
+	if(start==NULL)
+	{
+		printf("List is empty\n");
+		return start;
+	}
+	if(loc==1)
+	{
+		q=start->next;
+		free(start);
+		return q;
+	}
+	r=start;
+	q=r->next;
+	while(i<loc-1 && q!=NULL)
+	{
+		i++;
+		q=q->next;
+		r=r->next;
+	}
+	if(q==NULL)
+	{
+		printf("Location doesn't exist\n");
+		return start;
+	}
+	r->next=q->next;
+	free(q);
+	return start;
+}
+
+Node* deleteBefore(Node *start, int el1)
+{
+	Node *q,*r,*s;
+	if(start==NULL)
+	{
+		printf("List is empty\n");
+		return start;
+	}
+	s=start;
+	if(s->data==el1)
+	{
+		printf("No node before this\n");
+		return start;
+	}
+	r=s->next;
+	if(r!=NULL && r->data==el1)
+	{
+		printf("%d deleted\n",s->data);
+		free(s);
+		return r;
+	}
+	q=r->next;
+	while(q!=NULL && q->data!=el1)
+	{
+		q=q->next;
+		r=r->next;
+		s=s->next;
+	}
+	if(q==NULL)
+	{
+		printf("Data doesn't exist\n");
+		return start;
+	}
+	s->next=q;
+	free(r);
+	return start;
+}
+
+Node* deleteAfter(Node *start, int el1)
+{
+	Node *q,*r;
+	if(start==NULL)
+	{
+		printf("List is empty\n");
+		return start;
+	}
+	q=start;
+	while(q!=NULL && q->data!=el1)
+	{
+		q=q->next;
+	}
+	if(q==NULL)
+	{
+		printf("Data doesn't exist\n");
+		return start;
+	}
+	if(q->next==NULL)
+	{
+		printf("No node after this\n");
+		return start;
+	}
+	r=q->next;
+	q->next=r->next;
+	free(r);
+	return start;
+}
+
+Node* deleteEle(Node *start,int el1)
+{
+	Node *q,*r;
+	if(start==NULL)
+	{
+		printf("List is empty\n");
+		return start;
+	}
+	r=start;
+	if(r->data==el1)
+	{
+		printf("%d deleted\n",r->data);
+		q=r->next;
+		free(r);
+		return q;
+	}
+	q=r->next;
+	while(q!=NULL && q->data!=el1)
+	{
+		q=q->next;
+		r=r->next;
+	}
+	if(q==NULL)
+	{
+		printf("Data doesn't exist\n");
+		return start;
+	}
+	r->next=q->next;
+	free(q);
+	return start;
+}
+
+int Search(Node *start, int ele)
+{
+	Node *q=start;
+	int i=1;
+	while(q!=NULL && q->data!=ele)
+	{
+		i++;
+		q=q->next;
+	}
+	if(q==NULL)
+		return -1;
+	return i;
+}
+
 void main()
 {
 	int choice,ele,ch,loc,el1;
@@ -163,14 +379,45 @@ void main()
 				scanf("%d",&el1);
 				start=insertBefore(start,ele,el1);
 				break;
-
+				case 6:start=insertSorted(start,ele);
+				break;
+				default:printf("Invalid choice\n");
 			}
 			break;
-			case 2:
+			case 2:printf("1.Start\n2.End\n3.At a location\n4.After an element\n5.Before an element\n6.By element\nEnter your choice:");
+			scanf("%d",&ch);
+			switch(ch)
+			{
+				case 1:start=deleteB(start);
+				break;
+				case 2:start=deleteEnd(start);
+				break;
+				case 3:printf("Enter the location to be deleted:");
+				scanf("%d",&loc);
+				start=deleteAt(start,loc);
+				break;
+				case 4:printf("Enter the element after which to be deleted:");
+				scanf("%d",&el1);
+				start=deleteAfter(start,el1);
+				break;
+				case 5:printf("Enter the element before which to be deleted:");
+				scanf("%d",&el1);
+				start=deleteBefore(start,el1);
+				break;
+				case 6:printf("Enter value of node to be deleted:");
+				scanf("%d",&ele);
+				start=deleteEle(start,ele);
+				break;
+				default:printf("Invalid choice\n");
+			}
 			break;
 			case 3:display(start);
 			break;
-			case 4:
+			case 4:printf("Enter element to search:");
+			scanf("%d",&ele);
+			loc=Search(start,ele);
+			if(loc==-1) printf("Element not found\n");
+			else printf("Found at %d\n",loc);
 			break;
 			case 5:
 			break;
@@ -178,7 +425,6 @@ void main()
 			break;
 			case 7:
 			break;
-
 		}
 	}while(choice!=7);
 	getch();
